@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Goal Market Tips</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="w-full max-w-md p-4">
+    <div id="login" class="bg-white p-6 rounded-xl shadow-xl">
+      <h2 class="text-2xl font-bold mb-4 text-center text-blue-600">Login</h2>
+      <input type="text" id="username" placeholder="Username" class="w-full mb-2 p-2 border rounded">
+      <input type="password" id="password" placeholder="Password" class="w-full mb-4 p-2 border rounded">
+      <button onclick="login()" class="bg-blue-600 text-white px-4 py-2 rounded w-full">Login</button>
+      <p id="error" class="text-red-500 mt-2 text-center hidden">Invalid credentials</p>
+    </div>
+
+    <div id="tips" class="hidden bg-white p-6 rounded-xl shadow-xl">
+      <h1 class="text-xl font-bold mb-4 text-green-700 text-center">⚽ DAILY GOAL MARKET TIPS</h1>
+      <div id="date" class="text-center text-gray-500 mb-4"></div>
+      <div id="matches" class="space-y-4 text-gray-800 text-lg"></div>
+    </div>
+  </div>
+
+  <script>
+    const correctUsername = "as";
+    const correctPassword = "0804";
+
+    function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      if (username === correctUsername && password === correctPassword) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("tips").style.display = "block";
+        loadTips();
+      } else {
+        document.getElementById("error").classList.remove("hidden");
+      }
+    }
+
+    function loadTips() {
+      const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById("date").innerText = `📅 ${date}`;
+
+      fetch("../data/matches.json")
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById("matches");
+          container.innerHTML = "";
+          data.matches.forEach((match, idx) => {
+            const item = document.createElement("div");
+            item.innerHTML = `
+              <div><strong>${idx + 1}️⃣ ${match.name}</strong></div>
+              <div>🎯 Goals: ${match.tips.join(', ')}</div>
+            `;
+            container.appendChild(item);
+          });
+        });
+    }
+  </script>
+</body>
+</html>
